@@ -57,6 +57,9 @@ public class GLDM_U1_S0573689 implements PlugIn {
         if ( choice.equals("Belgische Fahne") ) {
             generateBelgischeFlagge(width, height, pixels);
         }
+        if ( choice.equals("Schwarz/Weiss Verlauf") ) {
+            generateSWVerlauf(width, height, pixels);
+        }
 
         ////////////////////////////////////////////////////////////////////
 
@@ -119,6 +122,25 @@ public class GLDM_U1_S0573689 implements PlugIn {
                     r = 255;
                     g = 0;
                     b = 0;
+                }
+                // Werte zurueckschreiben
+                pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
+            }
+        }
+    }
+
+    private void generateSWVerlauf(int width, int height, int[] pixels) {
+        // Schleife ueber die y-Werte
+        for (int y=0; y<height; y++) {
+            // Schleife ueber die x-Werte
+            for (int x=0; x<width; x++) {
+                int pos = y*width + x; // Arrayposition bestimmen
+
+                int r = (x/(width/256));
+                int g = (x/(width/256));
+                int b = (x/(width/256));
+                if(r>255||g>255||b>255){
+                    r=255;g=255;b=255;
                 }
                 // Werte zurueckschreiben
                 pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
