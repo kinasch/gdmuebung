@@ -63,6 +63,9 @@ public class GLDM_U1_S0573689 implements PlugIn {
         if ( choice.equals("Horiz. Schwarz/Rot vert. Schwarz/Blau Verlauf") ) {
             generateRSBVerlauf(width, height, pixels);
         }
+        if ( choice.equals("USA Fahne") ) {
+            generateUSAFlag(width, height, pixels);
+        }
         if ( choice.equals("Japanische Fahne") ) {
             generateJapFlag(width, height, pixels);
         }
@@ -175,6 +178,44 @@ public class GLDM_U1_S0573689 implements PlugIn {
                 if(r>255){
                     r=255;
                 }
+                // Werte zurueckschreiben
+                pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
+            }
+        }
+    }
+
+    private void generateUSAFlag(int width, int height, int[] pixels) {
+
+        for(int i=1;i<=13;i++){
+            // Schleife ueber die y-Werte
+            for (int y=((height/13)*(i-1)); y<((height*i)/13); y++) {
+                // Schleife ueber die x-Werte
+                for (int x=0; x<width; x++) {
+                    int pos = y*width + x; // Arrayposition bestimmen
+
+                    int r = 255;
+                    int g = 0;
+                    int b = 0;
+                    if(i%2==0){
+                        g=255;b=255;
+                    }
+
+                    // Werte zurueckschreiben
+                    pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
+                }
+            }
+        }
+
+        // Schleife ueber die y-Werte
+        for (int y=0; y<(height/(13))*7; y++) {
+            // Schleife ueber die x-Werte
+            for (int x=0; x<(width/2); x++) {
+                int pos = y*width + x; // Arrayposition bestimmen
+
+                int r = 0;
+                int g = 0;
+                int b = 255;
+
                 // Werte zurueckschreiben
                 pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
             }
