@@ -54,6 +54,9 @@ public class GLDM_U1_S0573689 implements PlugIn {
         if ( choice.equals("Gelbes Bild") ) {
             generateYellowImage(width, height, pixels);
         }
+        if ( choice.equals("Belgische Fahne") ) {
+            generateBelgischeFlagge(width, height, pixels);
+        }
 
         ////////////////////////////////////////////////////////////////////
 
@@ -90,6 +93,33 @@ public class GLDM_U1_S0573689 implements PlugIn {
                 int g = 255;
                 int b = 0;
 
+                // Werte zurueckschreiben
+                pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
+            }
+        }
+    }
+    private void generateBelgischeFlagge(int width, int height, int[] pixels) {
+        // Schleife ueber die y-Werte
+        for (int y=0; y<height; y++) {
+            // Schleife ueber die x-Werte
+            for (int x=0; x<width; x++) {
+                int pos = y*width + x; // Arrayposition bestimmen
+                int r = 0;
+                int g = 0;
+                int b = 0;
+                if(x<=(width/3)) { //Schauen ob ImageProcessing gerade im 1. Drittel
+                    r = 0;
+                    g = 0;
+                    b = 0;
+                } if(x>(width/3) && x<((width/3)*2)){ //Schauen ob ImageProcessing gerade im 2. Drittel
+                    r = 255;
+                    g = 255;
+                    b = 0;
+                } if(x>=((width/3)*2)){ //Schauen ob ImageProcessing gerade im 3. Drittel
+                    r = 255;
+                    g = 0;
+                    b = 0;
+                }
                 // Werte zurueckschreiben
                 pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
             }
