@@ -60,6 +60,9 @@ public class GLDM_U1_S0573689 implements PlugIn {
         if ( choice.equals("Schwarz/Weiss Verlauf") ) {
             generateSWVerlauf(width, height, pixels);
         }
+        if ( choice.equals("Horiz. Schwarz/Rot vert. Schwarz/Blau Verlauf") ) {
+            generateRSBVerlauf(width, height, pixels);
+        }
 
         ////////////////////////////////////////////////////////////////////
 
@@ -141,6 +144,28 @@ public class GLDM_U1_S0573689 implements PlugIn {
                 int b = (x/(width/256));
                 if(r>255||g>255||b>255){
                     r=255;g=255;b=255;
+                }
+                // Werte zurueckschreiben
+                pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
+            }
+        }
+    }
+
+    private void generateRSBVerlauf(int width, int height, int[] pixels) {
+        int b=0;
+        // Schleife ueber die y-Werte
+        for (int y=0; y<height; y++) {
+            b=y;
+            if(b>255){
+                b=255;
+            }
+            // Schleife ueber die x-Werte
+            for (int x=0; x<width; x++) {
+                int pos = y*width + x; // Arrayposition bestimmen
+                int r = (x/(width/256));
+                int g = 0;
+                if(r>255){
+                    r=255;
                 }
                 // Werte zurueckschreiben
                 pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
