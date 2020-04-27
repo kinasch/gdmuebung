@@ -63,6 +63,10 @@ public class GLDM_U1_S0573689 implements PlugIn {
         if ( choice.equals("Horiz. Schwarz/Rot vert. Schwarz/Blau Verlauf") ) {
             generateRSBVerlauf(width, height, pixels);
         }
+        if ( choice.equals("Japanische Fahne") ) {
+            generateJapFlag(width, height, pixels);
+        }
+
 
         ////////////////////////////////////////////////////////////////////
 
@@ -113,15 +117,15 @@ public class GLDM_U1_S0573689 implements PlugIn {
                 int r = 0;
                 int g = 0;
                 int b = 0;
-                if(x<=(width/3)) { //Schauen ob ImageProcessing gerade im 1. Drittel
+                if(x<=(width/3)) { // Schauen ob ImageProcessing gerade im 1. Drittel
                     r = 0;
                     g = 0;
                     b = 0;
-                } if(x>(width/3) && x<((width/3)*2)){ //Schauen ob ImageProcessing gerade im 2. Drittel
+                } if(x>(width/3) && x<((width/3)*2)){ // Schauen ob ImageProcessing gerade im 2. Drittel
                     r = 255;
                     g = 255;
                     b = 0;
-                } if(x>=((width/3)*2)){ //Schauen ob ImageProcessing gerade im 3. Drittel
+                } if(x>=((width/3)*2)){ // Schauen ob ImageProcessing gerade im 3. Drittel
                     r = 255;
                     g = 0;
                     b = 0;
@@ -138,10 +142,11 @@ public class GLDM_U1_S0573689 implements PlugIn {
             // Schleife ueber die x-Werte
             for (int x=0; x<width; x++) {
                 int pos = y*width + x; // Arrayposition bestimmen
-
+                // Schwarz-Weiß-Verlauf durch erhoehen jedes Farbanteils gleichmaessig
                 int r = (x/(width/256));
                 int g = (x/(width/256));
                 int b = (x/(width/256));
+                // Nach erreichen des hoechstmoeglichsten Farbwert pro Farbanteil bleibt Bleiben die Pixel bis Bildende komplett weiß
                 if(r>255||g>255||b>255){
                     r=255;g=255;b=255;
                 }
@@ -152,18 +157,21 @@ public class GLDM_U1_S0573689 implements PlugIn {
     }
 
     private void generateRSBVerlauf(int width, int height, int[] pixels) {
-        int b=0;
         // Schleife ueber die y-Werte
         for (int y=0; y<height; y++) {
-            b=y;
+            // Schwarz-Blau-Verlauf Vertikal durch erhoehen des blauen Anteils in der for-Schleife fuer die Hoehe
+            int b=y;
+            // Nach erreichen der Zahl 255 bleibt der Blauanteil immer auf 255, also auf dem Maximum (um Bilddopplung zu vermeiden)
             if(b>255){
                 b=255;
             }
             // Schleife ueber die x-Werte
             for (int x=0; x<width; x++) {
                 int pos = y*width + x; // Arrayposition bestimmen
+                // Schwarz-Rot-Verlauf Vertikal durch erhoehen des roten Anteils in der for-Schleife fuer die Breite
                 int r = (x/(width/256));
                 int g = 0;
+                // Nach erreichen der Zahl 255 bleibt der Rotanteil immer auf 255, also auf dem Maximum (um Bilddopplung zu vermeiden)
                 if(r>255){
                     r=255;
                 }
@@ -172,6 +180,30 @@ public class GLDM_U1_S0573689 implements PlugIn {
             }
         }
     }
+
+    private void generateJapFlag(int width, int height, int[] pixels) {
+        // Schleife ueber die y-Werte
+        for (int y=0; y<height; y++) {
+            // Schleife ueber die x-Werte
+            for (int x=0; x<width; x++) {
+                int pos = y*width + x; // Arrayposition bestimmen
+                // weißer Hintergrund
+                int r = 255;
+                int g = 255;
+                int b = 255;
+
+                // Abfrage ob Pixel ein Teil der Kreisgleichung mit dem Radius 120 ist oder ob der Pixel innerhalb dieses Kreis liegt
+                if(Math.pow(120,2)>=(Math.pow((x-(width/2)),2)+Math.pow((y-(height/2)),2))){
+                    r=255;g=0;b=0;
+                }
+
+
+                // Werte zurueckschreiben
+                pixels[pos] = 0xFF000000 | (r << 16) | (g << 8) |  b;
+            }
+        }
+    }
+
 
 
     private void dialog() {
