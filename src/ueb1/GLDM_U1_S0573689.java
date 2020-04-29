@@ -181,7 +181,7 @@ public class GLDM_U1_S0573689 implements PlugIn {
 
         for(int i=1;i<=13;i++){
             // Schleife ueber die y-Werte
-            for (int y=((height/13)*(i-1)); y<((height*i)/13); y++) {
+            for (int y=((height*(i-1))/13); y<((height*i)/13); y++) {
                 // Schleife ueber die x-Werte
                 for (int x=0; x<width; x++) {
                     int pos = y*width + x; // Arrayposition bestimmen
@@ -200,7 +200,7 @@ public class GLDM_U1_S0573689 implements PlugIn {
         }
 
         // Schleife ueber die y-Werte
-        for (int y=0; y<(height/(13))*7; y++) {
+        for (int y=0; y<((height*7)/13); y++) {
             // Schleife ueber die x-Werte
             for (int x=0; x<(width/2); x++) {
                 int pos = y*width + x; // Arrayposition bestimmen
