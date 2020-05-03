@@ -178,7 +178,7 @@ public class GLDM_U1_S0573689 implements PlugIn {
     }
 
     private void generateUSAFlag(int width, int height, int[] pixels) {
-
+        // rote Streifen, weisse Streifen
         for(int i=1;i<=13;i++){
             // Schleife ueber die y-Werte
             for (int y=((height*(i-1))/13); y<((height*i)/13); y++) {
@@ -199,6 +199,7 @@ public class GLDM_U1_S0573689 implements PlugIn {
             }
         }
 
+        // blauer Kasten
         // Schleife ueber die y-Werte
         for (int y=0; y<((height*7)/13); y++) {
             // Schleife ueber die x-Werte
