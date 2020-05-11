@@ -133,8 +133,10 @@ public class GRDM_U2_S0573689 implements PlugIn {
 				contrast = slider.getValue();
 				if(contrast<=50){
 					contrast = (contrast*0.2)/10;
+				} else if(contrast>50 && contrast<60){
+					contrast = ((contrast-40)/10);
 				} else{
-					contrast = (((contrast-50)*2)/50);
+					contrast = ((contrast-50)*0.2);
 				}
 				String str = "Kontrast " + contrast;
 				setSliderTitle(jSliderContrast, str);
