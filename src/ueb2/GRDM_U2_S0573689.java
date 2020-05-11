@@ -32,7 +32,7 @@ public class GRDM_U2_S0573689 implements PlugIn {
     public static void main(String args[]) {
 		//new ImageJ();
     	//IJ.open("/users/barthel/applications/ImageJ/_images/orchid.jpg");
-    	IJ.open("src\\ueb2\\orchid.jpg");
+    	IJ.open("D:\\Janik\\Documents\\Uni\\2tesSem_SS20\\gdm\\uebung\\src\\ueb2\\orchid.jpg");
 		
 		GRDM_U2_S0573689 pw = new GRDM_U2_S0573689();
 		pw.imp = IJ.getImage();
@@ -73,8 +73,9 @@ public class GRDM_U2_S0573689 implements PlugIn {
     class CustomWindow extends ImageWindow implements ChangeListener {
          
         private JSlider jSliderBrightness;
-		private JSlider jSlider2;
+		private JSlider jSliderContrast;
 		private double brightness;
+		private double contrast;
 
 		CustomWindow(ImagePlus imp, ImageCanvas ic) {
             super(imp, ic);
@@ -87,9 +88,9 @@ public class GRDM_U2_S0573689 implements PlugIn {
 
             panel.setLayout(new GridLayout(4, 1));
             jSliderBrightness = makeTitledSilder("Helligkeit", 0, 200, 100);
-            jSlider2 = makeTitledSilder("Slider2-Wert", 0, 100, 50);
+            jSliderContrast = makeTitledSilder("Kontrast", 0, 100, 50);
             panel.add(jSliderBrightness);
-            panel.add(jSlider2);
+            panel.add(jSliderContrast);
             
             add(panel);
             
@@ -128,10 +129,15 @@ public class GRDM_U2_S0573689 implements PlugIn {
 				setSliderTitle(jSliderBrightness, str); 
 			}
 			
-			if (slider == jSlider2) {
-				int value = slider.getValue();
-				String str = "Slider2-Wert " + value; 
-				setSliderTitle(jSlider2, str); 
+			if (slider == jSliderContrast) {
+				contrast = slider.getValue();
+				if(contrast<=50){
+					contrast = (contrast*0.2)/10;
+				} else{
+					contrast = (((contrast-50)*2)/50);
+				}
+				String str = "Kontrast " + contrast;
+				setSliderTitle(jSliderContrast, str);
 			}
 			
 			changePixelValues(imp.getProcessor());
@@ -163,18 +169,28 @@ public class GRDM_U2_S0573689 implements PlugIn {
 
 					// TODO alles wird hier verändert (RGB zu YUV erstmal)
 					// Brightness
-					u = (int)(u*((brightness+100)/100));
-					v = (int)(v*((brightness+100)/100));
-					ly = (int)(ly*((brightness+100)/100));
+					// u = (int)(u*((brightness+100)/100));
+					// v = (int)(v*((brightness+100)/100));
+					ly = (int)(ly+(brightness));
 
+					// Contrast
+					ly = (int)(ly*(contrast));
+					u = (int)(u*(contrast));
+					v = (int)(v*(contrast));
 
 					// TODO nach Änderungen wieder zu RGB
 					int rn = (int)(ly+(v/0.877));
 					int bn = (int)(ly+(u/0.493));
 					int gn = (int)((ly/0.587)-((0.299*rn)/0.587)-((0.114*bn)/0.587));
+
+					// Begrenzung auf den gültigen Farbbereich
 					if(rn>255){rn=255;}
 					if(bn>255){bn=255;}
 					if(gn>255){gn=255;}
+					if(rn<0){rn=0;}
+					if(bn<0){bn=0;}
+					if(gn<0){gn=0;}
+
 					// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
 					
 					pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
