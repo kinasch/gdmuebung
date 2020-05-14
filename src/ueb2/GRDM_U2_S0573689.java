@@ -91,7 +91,7 @@ public class GRDM_U2_S0573689 implements PlugIn {
         	Panel panel = new Panel();
 
             panel.setLayout(new GridLayout(4, 1));
-            jSliderBrightness = makeTitledSilder("Helligkeit", 0, 200, 100);
+            jSliderBrightness = makeTitledSilder("Helligkeit", -128, 128, 0);
             jSliderContrast = makeTitledSilder("Kontrast", 0, 100, 50);
             jSliderSaturation = makeTitledSilder("Saettigung",0,100,50);
             jSliderHue = makeTitledSilder("Hue",0,360,180);
@@ -132,7 +132,7 @@ public class GRDM_U2_S0573689 implements PlugIn {
 			JSlider slider = (JSlider)e.getSource();
 
 			if (slider == jSliderBrightness) {
-				brightness = slider.getValue()-100;
+				brightness = slider.getValue();
 				String str = "Helligkeit " + brightness; 
 				setSliderTitle(jSliderBrightness, str); 
 			}
@@ -191,48 +191,53 @@ public class GRDM_U2_S0573689 implements PlugIn {
 					int b =  argb        & 0xff;
 					
 					
-					// anstelle dieser drei Zeilen später hier die Farbtransformation durchführen,
-					// die Y Cb Cr -Werte verändern und dann wieder zurücktransformieren
+					// Transformieren von RGB zu YUV
 					int ly = (int)(0.299*r+0.587*g+0.114*b);
 					int u  = (int)((b-ly)*0.493);
 					int v  = (int)((r-ly)*0.877);
 
-					// TODO alles wird hier veraendert (RGB zu YUV erstmal)
+					// Alles wird hier veraendert
 					// Brightness
-					// u = (int)(u*((brightness+100)/100));
-					// v = (int)(v*((brightness+100)/100));
 					ly = (int)(ly+(brightness));
 
-					// Contrast
-					if(!(contrast == 555.5)) {
-						ly = (int) (ly * (contrast));
-						u = (int) (u * (contrast));
-						v = (int) (v * (contrast));
-					}
+					/* Contrast REDACTED
+					if(!(contrast == 555.5)) {			// Check ob Slider schon angeschoben, sonst wird der Kontrast ignoriert
+						ly = (int) (ly * (contrast)+brightness);
+						// u = (int) (u * (contrast));
+						// v = (int) (v * (contrast));
+					}*/
 
 					// Saturation
-					if(!(saturation == 666.6)) {
+					if(!(saturation == 666.6)) {  // Check ob Slider schon angeschoben, sonst wird die Saettigung ignoriert
 						u = (int) (u * (saturation));
 						v = (int) (v * (saturation));
 					}
 
 					// Hue
-					if(!(hue == 777.7)) {
+					if(!(hue == 777.7)) {			// Check ob Slider schon angeschoben, sonst wird die Farbrotation ignoriert
 						double h = Math.toRadians(hue);
 						int uVor= u;
 						int vVor = v;
 						// Drehung gegen Uhrzeigersinn (Vermutung)
 						u = (int)((uVor*(Math.cos(h))-(vVor*Math.sin(h))));
 						v = (int)((uVor*(Math.sin(h))+(vVor*Math.cos(h))));
-						//Drehung im Uhrzeigersinn (Vermutung)
+						// Drehung im Uhrzeigersinn (Vermutung)
 						// v = (int)((vVor*(Math.cos(h))-(uVor*Math.sin(h))));
 						// u = (int)((vVor*(Math.sin(h))+(uVor*Math.cos(h))));
 					}
 
-					// TODO nach Aenderungen wieder zu RGB
+					// Transformation von YUV zu RGB
 					int rn = (int)(ly+(v/0.877));
 					int bn = (int)(ly+(u/0.493));
 					int gn = (int)((ly/0.587)-((0.299*rn)/0.587)-((0.114*bn)/0.587));
+
+					// Contrast (Formel von https://www.dfstudios.co.uk/articles/programming/image-programming-algorithms/image-processing-algorithms-part-5-contrast-adjustment/)
+					if(contrast != 555.5) {		// Check ob Slider schon angeschoben, sonst wird der Kontrast ignoriert
+						rn = (int)(contrast * (rn - 127) + 127);
+						gn = (int)(contrast * (gn - 127) + 127);
+						bn = (int)(contrast * (bn - 127) + 127);
+					}
+
 
 					// Begrenzung auf den gültigen Farbbereich
 					if(rn>255){rn=255;}
@@ -241,8 +246,6 @@ public class GRDM_U2_S0573689 implements PlugIn {
 					if(rn<0){rn=0;}
 					if(bn<0){bn=0;}
 					if(gn<0){gn=0;}
-
-					// Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
 					
 					pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
 				}
