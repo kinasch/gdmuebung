@@ -265,7 +265,7 @@ public class GRDM_U3_S0573689 implements PlugIn {
                         int rn = r;
                         int gn = g;
                         int bn = b;
-                        /*
+
                         int rgb = r+g+b;
                         if(rgb < cp*1){
                             rn = gn = bn = 0;
@@ -273,15 +273,19 @@ public class GRDM_U3_S0573689 implements PlugIn {
                         if(rgb > cp*1 && rgb < cp*2){
                              rn = 96;
                             gn = 48;
+                            bn= 0;
                         }if(rgb > cp*2 && rgb < cp*3){
                             rn = 150;
                             gn = 75;
+                            bn=0;
                         }if(rgb > cp*3 && rgb < cp*4){
                             gn = 66;
                             bn = 150;
+                            rn=0;
                         }if(rgb > cp*4 && rgb < cp*5){
                             gn = 115;
                             bn = 160;
+                            rn=0;
                         }if(rgb > cp*5){
                             rn = gn = bn = 255;
                         }
@@ -293,7 +297,7 @@ public class GRDM_U3_S0573689 implements PlugIn {
 
 
 
-
+                        /*
                         if(r > 220 && b > 220){
                             rn = gn = bn = 255;
                         }
@@ -316,11 +320,11 @@ public class GRDM_U3_S0573689 implements PlugIn {
                             gn = 115;
                             bn = 160;
                         }
-
+                        */
 
                         // 007396 rgb(0,115,150)
                         // 004296 rgb(0,66,150)
-                        */
+
 
 
                         // Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
