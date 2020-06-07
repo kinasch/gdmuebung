@@ -15,6 +15,7 @@ import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -227,7 +228,7 @@ public class GRDM_U3_S0573689 implements PlugIn {
             }
 
             if (method.equals("Binär (horizontal)")) {
-
+                int diff = 0;
                 for (int y=0; y<height; y++) {
                     for (int x=0; x<width; x++) {
                         int pos = y*width + x;
@@ -237,20 +238,31 @@ public class GRDM_U3_S0573689 implements PlugIn {
                         int g = (argb >>  8) & 0xff;
                         int b =  argb        & 0xff;
 
-                        int rn = r;
-                        int gn = g;
-                        int bn = b;
+                        int rn = (int)(r*0.299);
+                        int gn = (int)(g*0.587);
+                        int bn = (int)(r*0.114);
+                        int uff = rn+gn+bn;
 
+
+                        int rngnbn = (int)((r+g+b)/3)+diff;
+
+                        if(rngnbn > 127){
+                            rngnbn = 0;
+                            diff = uff-127;
+                        } else if(rngnbn <128){
+                            rngnbn = 255;
+                            diff = 128-uff;
+                        }
                         // Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
 
-                        pixels[pos] = (0xFF<<24) | (rn<<16) | (gn<<8) | bn;
+                        pixels[pos] = (0xFF<<24) | (rngnbn<<16) | (rngnbn<<8) | rngnbn;
                     }
                 }
             }
 
             //Fields for 6 Farben
-            int cp = 765/6;             // Ein Sechstel des Dreifachen von 255
-            int cppp = (cp/3)/2;          // Hälfte des vorherigen Werts
+            int cp = 765/3/6;             // Ein Sechstel des Dreifachen von 255
+
             if (method.equals("6 Farben")) {
 
                 for (int y=0; y<height; y++) {
@@ -262,11 +274,13 @@ public class GRDM_U3_S0573689 implements PlugIn {
                         int g = (argb >>  8) & 0xff;
                         int b =  argb        & 0xff;
 
-                        int rn = r;
-                        int gn = g;
-                        int bn = b;
+                        int rn = 0;
+                        int gn = 0;
+                        int bn = 0;
 
-                        int rgb = r+g+b;
+                        // Anwenden der gewählten Farben nach dem Graustufenwert
+                        int rgb = (r+g+b)/3;
+
                         if(rgb < cp*1){
                             rn = gn = bn = 0;
                         }
@@ -286,45 +300,41 @@ public class GRDM_U3_S0573689 implements PlugIn {
                             gn = 115;
                             bn = 160;
                             rn=0;
-                        }if(rgb > cp*5){
+                        } if(rgb > cp*5){
                             rn = gn = bn = 255;
                         }
-
-
-
-
-
-
 
 
                         /*
-                        if(r > 220 && b > 220){
+                        //  6 Farben nach Rot und Blau (Hauptbestandteile des Bildes: Braun aus Rot und Grün und Blau)
+
+                        if(r > 229 && b > 229){
                             rn = gn = bn = 255;
                         }
-                        if(r < 35 && b < 35){
+                        if(r < 26 && b < 26){
                             rn = gn = bn = 0;
                         }
-                        if(b < 35 && r > 35 && r < 138){
+                        if(b < 25 && r > 25 && r < 128){
                             rn = 96;
                             gn = 48;
                         }
-                        if(b < 35 && r > 137){
+                        if(b < 25 && r > 127){
                             rn = 150;
                             gn = 75;
                         }
-                        if(r < 35 && b > 35 && b < 138){
+                        if(r < 25 && b > 25 && b < 128){
                             gn = 66;
                             bn = 150;
                         }
-                        if(r < 35 && b > 137){
+                        if(r < 25 && b > 127){
                             gn = 115;
                             bn = 160;
                         }
-                        */
+
 
                         // 007396 rgb(0,115,150)
                         // 004296 rgb(0,66,150)
-
+                        */
 
 
                         // Hier muessen die neuen RGB-Werte wieder auf den Bereich von 0 bis 255 begrenzt werden
