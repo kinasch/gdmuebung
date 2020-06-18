@@ -116,17 +116,18 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 							pixels_Erg[pos] = pixels_A[pos];
 					}
 
-
 					if (methode == 2) {
 						// Weiche Blende
+						// Nutzung der Formel des Foliensatzes
 						int rn,gn,bn;
 						rn = ((alpha*rA)+(255-alpha)*rB)/255;
 						gn = ((alpha*gA)+(255-alpha)*gB)/255;
 						bn = ((alpha*bA)+(255-alpha)*bB)/255;
 						pixels_Erg[pos] = 0xFF000000 + ((rn & 0xff) << 16) + ((gn & 0xff) << 8) + ( bn & 0xff);
 					}
+
 					if (methode == 3) {
-						// Overlay
+						// Overlay mit B im Hintergrund: Formeln und Abfragen aus dem Foliensatz
 						int rn,gn,bn;
 						if(rB<=128){
 							rn = (rA*rB)/128;
@@ -146,8 +147,8 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 						pixels_Erg[pos] = 0xFF000000 + ((rn & 0xff) << 16) + ((gn & 0xff) << 8) + ( bn & 0xff);
 					}
 					if (methode == 32) {
-						// Overlay
-						int rn,gn,bn;
+						// Overlay mit A im Hintergrund: Formeln und Abfragen aus dem Foliensatz
+						int rn,bn,gn;
 						if(rA<=128){
 							rn = (rB*rA)/128;
 						} else {
@@ -165,14 +166,34 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 						}
 						pixels_Erg[pos] = 0xFF000000 + ((rn & 0xff) << 16) + ((gn & 0xff) << 8) + ( bn & 0xff);
 					}
+
 					if (methode == 4) {
 						// Schieben
-
+						// Einschub = (z * width) / 95;
+						// int einschub = width-((z * width) / 95);
+						/* WIP */
 					}
+
 					if (methode == 5) {
 						// Chroma Key
 
+						// Abfrage über YUV mit dieser Eingrenzung // (uu<20&&uu>-100)&&(vv<100&&vv>20)
+						int yy = (int)(0.299*rA+0.587*gA+0.114*bA);
+						int uu = (int)((bA-yy)*0.493);
+						int vv = (int)((rA-yy)*0.877);
+						// Eingrenzung über RGB mit dieser Formel // rA>100 && gA>100 && bA<128
+
+						// Ist der Pixel in A ähnlich zur Key Farbe, so wird der Pixel von B genommen
+						// wenn nicht, dann wird der Pixel von A genommen.
+						if((uu<20&&uu>-100)&&(vv<100&&vv>20)){
+							pixels_Erg[pos] = pixels_B[pos];
+						} else{
+							pixels_Erg[pos] = pixels_A[pos];
+						}
+
+						// Ich habe keine Ahnung was besser ist...
 					}
+
 					if (methode == 6) {
 						// Extra
 
