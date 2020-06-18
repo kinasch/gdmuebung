@@ -10,7 +10,7 @@ import ij.plugin.filter.*;
 public class GRDM_U4_S0573689 implements PlugInFilter {
 
 	protected ImagePlus imp;
-	final static String[] choices = {"Wischen", "Weiche Blende","Overlay","Schieben", "Chroma Key", "Extra"};
+	final static String[] choices = {"Wischen", "Weiche Blende","Overlay(A,B)","Overlay(B,A)","Schieben", "Chroma Key", "Extra"};
 
 	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
@@ -74,7 +74,8 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 		String s = gd.getNextChoice();
 		if (s.equals("Wischen")) methode = 1;
 		if (s.equals("Weiche Blende")) methode = 2;
-		if (s.equals("Overlay")) methode = 3;
+		if (s.equals("Overlay(A,B)")) methode = 3;
+		if (s.equals("Overlay(B,A)")) methode = 32;
 		if (s.equals("Schieben")) methode = 4;
 		if (s.equals("Chroma Key")) methode = 5;
 		if (s.equals("Extra")) methode = 6;
@@ -87,6 +88,7 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 		// Schleife ueber alle Bilder
 		for (int z=1; z<=length; z++)
 		{
+			int alpha = (z * 255)/95;
 			pixels_B   = (int[]) stack_B.getPixels(z);
 			pixels_A   = (int[]) stack_A.getPixels(z);
 			pixels_Erg = (int[]) stack_Erg.getPixels(z);
@@ -117,7 +119,6 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 
 					if (methode == 2) {
 						// Weiche Blende
-						int alpha = (z * 255)/95;
 						int rn,gn,bn;
 						rn = ((alpha*rA)+(255-alpha)*rB)/255;
 						gn = ((alpha*gA)+(255-alpha)*gB)/255;
@@ -126,7 +127,43 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 					}
 					if (methode == 3) {
 						// Overlay
-
+						int rn,gn,bn;
+						if(rB<=128){
+							rn = (rA*rB)/128;
+						} else {
+							rn = 255 - ((255-rA)*(255-rB)/128);
+						}
+						if(gB<=128){
+							gn = (gA*gB)/128;
+						} else {
+							gn = 255 - ((255-gA)*(255-gB)/128);
+						}
+						if(bB<=128){
+							bn = (bA*bB)/128;
+						} else {
+							bn = 255 - ((255-bA)*(255-bB)/128);
+						}
+						pixels_Erg[pos] = 0xFF000000 + ((rn & 0xff) << 16) + ((gn & 0xff) << 8) + ( bn & 0xff);
+					}
+					if (methode == 32) {
+						// Overlay
+						int rn,gn,bn;
+						if(rA<=128){
+							rn = (rB*rA)/128;
+						} else {
+							rn = 255 - ((255-rB)*(255-rA)/128);
+						}
+						if(gA<=128){
+							gn = (gB*gA)/128;
+						} else {
+							gn = 255 - ((255-gB)*(255-gA)/128);
+						}
+						if(bA<=128){
+							bn = (bB*bA)/128;
+						} else {
+							bn = 255 - ((255-bB)*(255-bA)/128);
+						}
+						pixels_Erg[pos] = 0xFF000000 + ((rn & 0xff) << 16) + ((gn & 0xff) << 8) + ( bn & 0xff);
 					}
 					if (methode == 4) {
 						// Schieben
