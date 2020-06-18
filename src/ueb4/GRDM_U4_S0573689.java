@@ -10,7 +10,7 @@ import ij.plugin.filter.*;
 public class GRDM_U4_S0573689 implements PlugInFilter {
 
 	protected ImagePlus imp;
-	final static String[] choices = {"Wischen", "Weiche Blende", "Chroma Key", "Extra"};
+	final static String[] choices = {"Wischen", "Weiche Blende","Overlay","Schieben", "Chroma Key", "Extra"};
 
 	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
@@ -21,7 +21,7 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 		ImageJ ij = new ImageJ(); // neue ImageJ Instanz starten und anzeigen 
 		ij.exitWhenQuitting(true);
 		
-		IJ.open("/Users/barthel/HTW/internet/meineWebseite/veranstaltungen/GLDM/uebungen/uebung4/StackB.zip");
+		IJ.open("D:\\Janik\\Documents\\Uni\\2tesSem_SS20\\gdm\\uebung\\src\\ueb4\\StackB.zip");
 		
 		GRDM_U4_S0573689 sd = new GRDM_U4_S0573689();
 		sd.imp = IJ.getImage();
@@ -39,13 +39,15 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 		
 		// ermoeglicht das Laden eines Bildes / Films
 		Opener o = new Opener();
+		/*
 		OpenDialog od_A = new OpenDialog("Auswählen des 2. Filmes ...",  "");
 				
 		// Film A wird dazugeladen
 		String dateiA = od_A.getFileName();
 		if (dateiA == null) return; // Abbruch
 		String pfadA = od_A.getDirectory();
-		ImagePlus A = o.openImage(pfadA,dateiA);
+		*/
+		ImagePlus A = o.openImage("D:\\Janik\\Documents\\Uni\\2tesSem_SS20\\gdm\\uebung\\src\\ueb4\\StackA.zip");
 		if (A == null) return; // Abbruch
 
 		ImageProcessor A_ip = A.getProcessor();
@@ -72,8 +74,10 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 		String s = gd.getNextChoice();
 		if (s.equals("Wischen")) methode = 1;
 		if (s.equals("Weiche Blende")) methode = 2;
-		if (s.equals("Chroma Key")) methode = 3;
-		if (s.equals("Extra")) methode = 4;
+		if (s.equals("Overlay")) methode = 3;
+		if (s.equals("Schieben")) methode = 4;
+		if (s.equals("Chroma Key")) methode = 5;
+		if (s.equals("Extra")) methode = 6;
 
 		// Arrays fuer die einzelnen Bilder
 		int[] pixels_B;
@@ -103,24 +107,39 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 
 					if (methode == 1)
 					{
-					if (x+1 > (z-1)*(double)width/(length-1))
-						pixels_Erg[pos] = pixels_B[pos];
-					else
-						pixels_Erg[pos] = pixels_A[pos];
+						//Wischen
+						if (y+1 > (z-1)*(double)height/(length-1))
+							pixels_Erg[pos] = pixels_B[pos];
+						else
+							pixels_Erg[pos] = pixels_A[pos];
 					}
 
-					/*
-					if (methode == 2)
-					{
-					// ...
-					
-					int r = ...
-					int g = ...
-					int b = ...
 
-					pixels_Erg[pos] = 0xFF000000 + ((r & 0xff) << 16) + ((g & 0xff) << 8) + ( b & 0xff);
+					if (methode == 2) {
+						// Weiche Blende
+						int alpha = (z * 255)/95;
+						int rn,gn,bn;
+						rn = ((alpha*rA)+(255-alpha)*rB)/255;
+						gn = ((alpha*gA)+(255-alpha)*gB)/255;
+						bn = ((alpha*bA)+(255-alpha)*bB)/255;
+						pixels_Erg[pos] = 0xFF000000 + ((rn & 0xff) << 16) + ((gn & 0xff) << 8) + ( bn & 0xff);
 					}
-					*/
+					if (methode == 3) {
+						// Overlay
+
+					}
+					if (methode == 4) {
+						// Schieben
+
+					}
+					if (methode == 5) {
+						// Chroma Key
+
+					}
+					if (methode == 6) {
+						// Extra
+
+					}
 				}
 		}
 
