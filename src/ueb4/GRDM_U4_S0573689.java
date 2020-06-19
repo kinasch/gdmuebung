@@ -88,7 +88,7 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 		// Schleife ueber alle Bilder
 		for (int z=1; z<=length; z++)
 		{
-			int einschub = (((z-1) * width) / 94);
+			int einschub =(((z-1) * width) / 94);
 			int r = ((z-1)*width)/150;
 			int alpha = (z * 255)/95;
 			pixels_B   = (int[]) stack_B.getPixels(z);
@@ -172,11 +172,11 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 					if (methode == 4) {
 						// Schieben
 						// Einschub = (z * width) / 95;
-
-						if(x+1>einschub){
-							pixels_Erg[pos] = pixels_A[pos+einschub];
-						} else {
+						if(x+1 > einschub){
 							pixels_Erg[pos] = pixels_B[pos-einschub];
+						} else {
+							if(pos+einschub >= pixels_A.length) einschub = pixels_A.length-pos-1;
+							pixels_Erg[pos] = pixels_A[pos+einschub];
 						}
 					}
 
@@ -204,7 +204,7 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 						// Extra
 						// Math.pow(r,2)>=(Math.pow((x-(width/2)),2)+Math.pow((y-(height/2)),2))
 						// pos+einschub<pixels_A.length
-						if(Math.pow(r,2)>=(Math.pow((x-(width/2)),2)+Math.pow((y-(height/2)),2))){
+						if(Math.pow(r,2)<=(Math.pow((x-(width/2)),2)+Math.pow((y-(height/2)),2))){
 							pixels_Erg[pos] = pixels_A[pos];
 						} else{
 							pixels_Erg[pos] = pixels_B[pos];
