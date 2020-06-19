@@ -88,6 +88,8 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 		// Schleife ueber alle Bilder
 		for (int z=1; z<=length; z++)
 		{
+			int einschub = (((z-1) * width) / 94);
+			int r = ((z-1)*width)/150;
 			int alpha = (z * 255)/95;
 			pixels_B   = (int[]) stack_B.getPixels(z);
 			pixels_A   = (int[]) stack_A.getPixels(z);
@@ -170,22 +172,26 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 					if (methode == 4) {
 						// Schieben
 						// Einschub = (z * width) / 95;
-						// int einschub = width-((z * width) / 95);
-						/* WIP */
+
+						if(x+1>einschub){
+							pixels_Erg[pos] = pixels_A[pos+einschub];
+						} else {
+							pixels_Erg[pos] = pixels_B[pos-einschub];
+						}
 					}
 
 					if (methode == 5) {
 						// Chroma Key
 
 						// Abfrage über YUV mit dieser Eingrenzung // (uu<20&&uu>-100)&&(vv<100&&vv>20)
-						int yy = (int)(0.299*rA+0.587*gA+0.114*bA);
-						int uu = (int)((bA-yy)*0.493);
-						int vv = (int)((rA-yy)*0.877);
+						//int yy = (int)(0.299*rA+0.587*gA+0.114*bA);
+						//int uu = (int)((bA-yy)*0.493);
+						//int vv = (int)((rA-yy)*0.877);
 						// Eingrenzung über RGB mit dieser Formel // rA>100 && gA>100 && bA<128
 
 						// Ist der Pixel in A ähnlich zur Key Farbe, so wird der Pixel von B genommen
-						// wenn nicht, dann wird der Pixel von A genommen.
-						if((uu<20&&uu>-100)&&(vv<100&&vv>20)){
+						// wenn nicht, dann wird der Pixel von A genommen
+						if(rA>100 && gA>100 && bA<128){
 							pixels_Erg[pos] = pixels_B[pos];
 						} else{
 							pixels_Erg[pos] = pixels_A[pos];
@@ -196,6 +202,13 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 
 					if (methode == 6) {
 						// Extra
+						// Math.pow(r,2)>=(Math.pow((x-(width/2)),2)+Math.pow((y-(height/2)),2))
+						// pos+einschub<pixels_A.length
+						if(Math.pow(r,2)>=(Math.pow((x-(width/2)),2)+Math.pow((y-(height/2)),2))){
+							pixels_Erg[pos] = pixels_A[pos];
+						} else{
+							pixels_Erg[pos] = pixels_B[pos];
+						}
 
 					}
 				}
