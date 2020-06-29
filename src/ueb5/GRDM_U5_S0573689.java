@@ -34,7 +34,7 @@ public class GRDM_U5_S0573689 implements PlugIn {
     private int width;
     private int height;
 
-    String[] items = {"Original", "Filter 1"};
+    String[] items = {"Original", "Weichzeichner"};
 
 
     public static void main(String args[]) {
@@ -130,24 +130,38 @@ public class GRDM_U5_S0573689 implements PlugIn {
                 }
             }
 
-            if (method.equals("Filter 1")) {
-
-                for (int y=0; y<height; y++) {
-                    for (int x=0; x<width; x++) {
+            if (method.equals("Weichzeichner")) {
+                for (int y=1; y<height-1; y++) {
+                    for (int x=1; x<width-1; x++) {
                         int pos = y*width + x;
-                        int argb = origPixels[pos];  // Lesen der Originalwerte
+                        int argb[] = new int[9];
+                        int rn = 0;
+                        int gn = 0;
+                        int bn = 0;
+                        for(int p = 0;p<argb.length;p++) {
+                            if(p<3) {
+                                argb[p] = origPixels[(pos-width)+(p-1)];
+                            }
+                            if(p>2&&p<6) {
+                                argb[p] = origPixels[(pos)+(p-4)];
+                            }
+                            if(p>5) {
+                                argb[p] = origPixels[(pos+width)+(p-7)];
+                            }
+                            rn += ((argb[p] >> 16) & 0xff);
+                            gn += ((argb[p] >> 8) & 0xff);
+                            bn += (argb[p] & 0xff);
 
-                        int r = (argb >> 16) & 0xff;
-                        int g = (argb >>  8) & 0xff;
-                        int b =  argb        & 0xff;
+                        }
 
-                        int rn = r/2;
-                        int gn = g/2;
-                        int bn = b/2;
+                        rn = rn/9;
+                        gn = gn/9;
+                        bn = bn/9;
 
                         pixels[pos] = (0xFF<<24) | (rn<<16) | (gn << 8) | bn;
                     }
                 }
+
             }
 
 
