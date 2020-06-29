@@ -174,8 +174,8 @@ public class GRDM_U4_S0573689 implements PlugInFilter {
 						// Einschub = (z * width) / 95;
 						if(x+1 > einschub){
 							pixels_Erg[pos] = pixels_B[pos-einschub];
-						} else {
-							if(pos+einschub >= pixels_A.length) einschub = pixels_A.length-pos-1;
+						} else if(pos+einschub < pixels_A.length) {
+							//if(pos+einschub >= pixels_A.length) einschub = pixels_A.length-pos-1;
 							pixels_Erg[pos] = pixels_A[pos+einschub];
 						}
 					}
