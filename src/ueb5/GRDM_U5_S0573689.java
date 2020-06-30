@@ -34,7 +34,7 @@ public class GRDM_U5_S0573689 implements PlugIn {
     private int width;
     private int height;
 
-    String[] items = {"Original", "Weichzeichner"};
+    String[] items = {"Original", "Weichzeichner", "Hochpassfilter", "Scharfe Kanten"};
 
 
     public static void main(String args[]) {
@@ -131,10 +131,56 @@ public class GRDM_U5_S0573689 implements PlugIn {
             }
 
             if (method.equals("Weichzeichner")) {
+                for (int y=0; y<height; y++) {
+                    for (int x=1; x<width-1; x++) {
+                        int pos = y*width + x;
+
+                        int limit=9;
+                        int b=0;
+                        if(y==0){
+                            b=3;
+                        } else if(y==height-1){
+                            limit=6;
+                        }
+
+                        int argb[] = new int[limit-b];
+
+                        int rn = 0;
+                        int gn = 0;
+                        int bn = 0;
+
+                        for(int p = b;p<argb.length;p++) {
+                            if(p<3) {
+                                argb[p] = origPixels[(pos-width)+(p-1)];
+                            }
+                            if(p>2&&p<6) {
+                                argb[p] = origPixels[(pos)+(p-4)];
+                            }
+                            if(p>5) {
+                                argb[p] = origPixels[(pos+width)+(p-7)];
+                            }
+                            rn += ((argb[p] >> 16) & 0xff);
+                            gn += ((argb[p] >> 8) & 0xff);
+                            bn += (argb[p] & 0xff);
+
+                        }
+
+                        rn = rn/(limit-b);
+                        gn = gn/(limit-b);
+                        bn = bn/(limit-b);
+
+                        pixels[pos] = (0xFF<<24) | (rn<<16) | (gn << 8) | bn;
+                    }
+                }
+
+            }
+
+            if (method.equals("Hochpassfilter")) {
                 for (int y=1; y<height-1; y++) {
                     for (int x=1; x<width-1; x++) {
                         int pos = y*width + x;
                         int argb[] = new int[9];
+                        int rnn,gnn,bnn;
                         int rn = 0;
                         int gn = 0;
                         int bn = 0;
@@ -157,13 +203,78 @@ public class GRDM_U5_S0573689 implements PlugIn {
                         rn = rn/9;
                         gn = gn/9;
                         bn = bn/9;
+                        int placeholder = origPixels[pos];
+                        rnn = ((placeholder >> 16) & 0xff)-rn+128;
+                        gnn = ((placeholder >> 8) & 0xff)-gn+128;
+                        bnn = ((placeholder) & 0xff)-bn+128;
 
-                        pixels[pos] = (0xFF<<24) | (rn<<16) | (gn << 8) | bn;
+                        pixels[pos] = (0xFF<<24) | (rnn<<16) | (gnn << 8) | bnn;
                     }
                 }
 
             }
 
+
+            if (method.equals("Scharfe Kanten")) {
+                for (int y=1; y<height-1; y++) {
+                    for (int x=1; x<width-1; x++) {
+                        int pos = y*width + x;
+                        int argb[] = new int[9];
+                        int rnn,gnn,bnn;
+                        int rn = 0;
+                        int gn = 0;
+                        int bn = 0;
+                        for(int p = 0;p<argb.length;p++) {
+                            if(p<3) {
+                                argb[p] = origPixels[(pos-width)+(p-1)];
+                            }
+                            if(p>2&&p<6) {
+                                argb[p] = origPixels[(pos)+(p-4)];
+                            }
+                            if(p>5) {
+                                argb[p] = origPixels[(pos+width)+(p-7)];
+                            }
+                            rn += ((argb[p] >> 16) & 0xff);
+                            gn += ((argb[p] >> 8) & 0xff);
+                            bn += (argb[p] & 0xff);
+
+                        }
+
+                        rn = rn/9;
+                        gn = gn/9;
+                        bn = bn/9;
+                        int placeholder = origPixels[pos];
+                        rnn = ((placeholder >> 16) & 0xff)-rn+128;
+                        gnn = ((placeholder >> 8) & 0xff)-gn+128;
+                        bnn = ((placeholder) & 0xff)-bn+128;
+                        int rnnn = ((placeholder >> 16) & 0xff)+rnn-128;
+                        int gnnn = ((placeholder >> 8) & 0xff)+gnn-128;
+                        int bnnn = ((placeholder) & 0xff)+bnn-128;
+
+                        if(rnnn<0){
+                            rnnn=0;
+                        }
+                        if(gnnn<0){
+                            gnnn=0;
+                        }
+                        if(bnnn<0){
+                            bnnn=0;
+                        }
+                        if(rnnn>255){
+                            rnnn=255;
+                        }
+                        if(gnnn>255){
+                            gnnn=255;
+                        }
+                        if(bnnn>255){
+                            bnnn=255;
+                        }
+
+                        pixels[pos] = (0xFF<<24) | (rnnn<<16) | (gnnn << 8) | bnnn;
+                    }
+                }
+
+            }
 
 
         }
