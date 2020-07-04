@@ -132,15 +132,21 @@ public class GRDM_U5_S0573689 implements PlugIn {
 
             if (method.equals("Weichzeichner")) {
                 for (int y=0; y<height; y++) {
-                    for (int x=1; x<width-1; x++) {
+                    for (int x=0; x<width; x++) {
                         int pos = y*width + x;
 
+                        int xgrenze = 0;
                         int limit=9;
                         int b=0;
                         if(y==0){
                             b=3;
                         } else if(y==height-1){
                             limit=6;
+                        }
+                        if(x==0){
+                            xgrenze=1;
+                        } else if(x==width-1){
+                            xgrenze=-1;
                         }
 
                         int argb[] = new int[limit-b];
@@ -151,13 +157,13 @@ public class GRDM_U5_S0573689 implements PlugIn {
 
                         for(int p = b;p<argb.length;p++) {
                             if(p<3) {
-                                argb[p] = origPixels[(pos-width)+(p-1)];
+                                argb[p] = origPixels[(pos-width)+(p-1+xgrenze)];
                             }
                             if(p>2&&p<6) {
-                                argb[p] = origPixels[(pos)+(p-4)];
+                                argb[p] = origPixels[(pos)+(p-4+xgrenze)];
                             }
                             if(p>5) {
-                                argb[p] = origPixels[(pos+width)+(p-7)];
+                                argb[p] = origPixels[(pos+width)+(p-7+xgrenze)];
                             }
                             rn += ((argb[p] >> 16) & 0xff);
                             gn += ((argb[p] >> 8) & 0xff);
@@ -176,23 +182,40 @@ public class GRDM_U5_S0573689 implements PlugIn {
             }
 
             if (method.equals("Hochpassfilter")) {
-                for (int y=1; y<height-1; y++) {
-                    for (int x=1; x<width-1; x++) {
+                for (int y=0; y<height; y++) {
+                    for (int x=0; x<width; x++) {
                         int pos = y*width + x;
-                        int argb[] = new int[9];
+
                         int rnn,gnn,bnn;
+                        int xgrenze = 0;
+                        int limit=9;
+                        int b=0;
+                        if(y==0){
+                            b=3;
+                        } else if(y==height-1){
+                            limit=6;
+                        }
+                        if(x==0){
+                            xgrenze=1;
+                        } else if(x==width-1){
+                            xgrenze=-1;
+                        }
+
+                        int argb[] = new int[limit-b];
+
                         int rn = 0;
                         int gn = 0;
                         int bn = 0;
-                        for(int p = 0;p<argb.length;p++) {
+
+                        for(int p = b;p<argb.length;p++) {
                             if(p<3) {
-                                argb[p] = origPixels[(pos-width)+(p-1)];
+                                argb[p] = origPixels[(pos-width)+(p-1+xgrenze)];
                             }
                             if(p>2&&p<6) {
-                                argb[p] = origPixels[(pos)+(p-4)];
+                                argb[p] = origPixels[(pos)+(p-4+xgrenze)];
                             }
                             if(p>5) {
-                                argb[p] = origPixels[(pos+width)+(p-7)];
+                                argb[p] = origPixels[(pos+width)+(p-7+xgrenze)];
                             }
                             rn += ((argb[p] >> 16) & 0xff);
                             gn += ((argb[p] >> 8) & 0xff);
@@ -200,9 +223,9 @@ public class GRDM_U5_S0573689 implements PlugIn {
 
                         }
 
-                        rn = rn/9;
-                        gn = gn/9;
-                        bn = bn/9;
+                        rn = rn/(limit-b);
+                        gn = gn/(limit-b);
+                        bn = bn/(limit-b);
                         int placeholder = origPixels[pos];
                         rnn = ((placeholder >> 16) & 0xff)-rn+128;
                         gnn = ((placeholder >> 8) & 0xff)-gn+128;
@@ -216,23 +239,40 @@ public class GRDM_U5_S0573689 implements PlugIn {
 
 
             if (method.equals("Scharfe Kanten")) {
-                for (int y=1; y<height-1; y++) {
-                    for (int x=1; x<width-1; x++) {
+                for (int y=0; y<height; y++) {
+                    for (int x=0; x<width; x++) {
                         int pos = y*width + x;
-                        int argb[] = new int[9];
+
                         int rnn,gnn,bnn;
+                        int xgrenze = 0;
+                        int limit=9;
+                        int b=0;
+                        if(y==0){
+                            b=3;
+                        } else if(y==height-1){
+                            limit=6;
+                        }
+                        if(x==0){
+                            xgrenze=1;
+                        } else if(x==width-1){
+                            xgrenze=-1;
+                        }
+
+                        int argb[] = new int[limit-b];
+
                         int rn = 0;
                         int gn = 0;
                         int bn = 0;
-                        for(int p = 0;p<argb.length;p++) {
+
+                        for(int p = b;p<argb.length;p++) {
                             if(p<3) {
-                                argb[p] = origPixels[(pos-width)+(p-1)];
+                                argb[p] = origPixels[(pos-width)+(p-1+xgrenze)];
                             }
                             if(p>2&&p<6) {
-                                argb[p] = origPixels[(pos)+(p-4)];
+                                argb[p] = origPixels[(pos)+(p-4+xgrenze)];
                             }
                             if(p>5) {
-                                argb[p] = origPixels[(pos+width)+(p-7)];
+                                argb[p] = origPixels[(pos+width)+(p-7+xgrenze)];
                             }
                             rn += ((argb[p] >> 16) & 0xff);
                             gn += ((argb[p] >> 8) & 0xff);
@@ -240,9 +280,9 @@ public class GRDM_U5_S0573689 implements PlugIn {
 
                         }
 
-                        rn = rn/9;
-                        gn = gn/9;
-                        bn = bn/9;
+                        rn = rn/(limit-b);
+                        gn = gn/(limit-b);
+                        bn = bn/(limit-b);
                         int placeholder = origPixels[pos];
                         rnn = ((placeholder >> 16) & 0xff)-rn+128;
                         gnn = ((placeholder >> 8) & 0xff)-gn+128;
