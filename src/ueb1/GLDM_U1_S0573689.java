@@ -148,7 +148,7 @@ public class GLDM_U1_S0573689 implements PlugIn {
             for (int x=0; x<width; x++) {
                 int pos = y*width + x; // Arrayposition bestimmen
                 // Schwarz-Weiß-Verlauf durch erhoehen jedes Farbanteils gleichmaessig
-                int rgb = ((x*rundungsBeheber)/((width*rundungsBeheber)/256));
+                int rgb = (256);
 
                 // Nach erreichen des hoechstmoeglichsten Farbwert pro Farbanteil bleibt Bleiben die Pixel bis Bildende komplett weiß
 
