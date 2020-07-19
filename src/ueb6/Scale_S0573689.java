@@ -13,7 +13,7 @@ public class Scale_S0573689 implements PlugInFilter {
 
     public int setup(String arg, ImagePlus imp) {
         if (arg.equals("about"))
-        {showAbout(); return DONE;}
+        {showabout(); return DONE;}
         return DOES_RGB+NO_CHANGES;
         // kann RGB-Bilder und veraendert das Original nicht
     }
@@ -37,8 +37,8 @@ public class Scale_S0573689 implements PlugInFilter {
 
         GenericDialog gd = new GenericDialog("scale");
         gd.addChoice("Methode",dropdownmenue,dropdownmenue[0]);
-        gd.addNumericField("Hoehe:",500,0);
-        gd.addNumericField("Breite:",400,0);
+        gd.addNumericField("Hoehe:",230,0);
+        gd.addNumericField("Breite:",250,0);
 
         gd.showDialog();
 
@@ -86,33 +86,92 @@ public class Scale_S0573689 implements PlugInFilter {
                 }
 
                 if(methode.equals("Pixelwiederholung")) {
-                    if (y < height*ratio && x < width*ratio) {
-                        /*
-                        * int pos_n = y_n * width_n + x_n;
-                        * int pos = y * width + x;
-                        *
-                        * float v = y_n - y;
-                        * float h = x_n - x;
-                        *
-                        * if(h<0.5 && v<0.5) pos = y * width + x;
-                        * if(h>=0.5 && v<0.5) pos = y * width + (x+1);
-                        * if(h<0.5 && v>=0.5) pos = (y+1) * width + x;
-                        * if(h>=0.5 && v>=0.5) pos = (y+1) * width + (x+1);
-                        *
-                        * */
-                        // der folgende Code enstand durch Inspiration: https://github.com/judithekoch/gdm/blob/master/GLDM_S0540826/u6/Scale_S0540826.java#L125
+                    if (y < (height-1)*ratio && x < (width-1)*ratio) {
                         int pos_n = y_n * width_n + x_n;
-                        int pos = (int)(x_n/ratioBreite) + (int)(y_n/ratioHoehe) * width;
+                        int pos = (int)(y_n/ratio) * width + (int)(x_n/ratio);
+
+                        double v = (double)(y_n/ratioHoehe);
+                        double h = (double)(x_n/ratioBreite);
+
+                        if(h<0.5 && v<0.5) pos = (int)((y_n)/ratioHoehe) * width + (int)((x_n)/ratioBreite);
+                        if(h>=0.5 && v<0.5) pos = (int)((y_n)/ratioHoehe) * width + (int)((x_n+1)/ratioBreite);
+                        if(h<0.5 && v>=0.5) pos = (int)((y_n+1)/ratioHoehe) * width + (int)((x_n)/ratioBreite);
+                        if(h>=0.5 && v>=0.5) pos = (int)((y_n+1)/ratioHoehe) * width + (int)((x_n+1)/ratioBreite);
+
                         pix_n[pos_n] = pix[pos];
                     }
                 }
 
                 if(methode.equals("Bilinear")) {
-                    if (y < height && x < width) {
+                    // Randbehandlung, ein wenig grob, aber es funktioniert
+                    if (y < (height-1)*ratio && x < (width-1)*ratio) {
                         int pos_n = y_n * width_n + x_n;
-                        int pos = y * width + x;
+                        int pos = (int)(y_n/ratio) * width + (int)(x_n/ratio);
 
-                        pix_n[pos_n] = pix[pos];
+                        double v = (double)(y_n/ratioHoehe) % 1;
+                        double h = (double)(x_n/ratioBreite) % 1;
+
+
+                        // ungünstige Rundung
+                        /*int a = pix[pos];
+                        int bb = pix[pos+1];
+                        int c = pix[pos+width];
+                        int d = pix[pos+width+1];
+                        int rgb = (int)((a*(1-h)*(1-v))+(bb*(h)*(1-v))+(c*(1-h)*(v))+(d*(h)*(v)));
+
+
+                        int r = (rgb >> 16) & 0xff;
+                        int g = (rgb >> 8) & 0xff;
+                        int b = (rgb) & 0xff;
+*/
+
+                        // bessere aufnahme der werte
+                        /** WICHTIG!   Dieser Code ist angelehnt an
+                         *
+                         * https://github.com/judithekoch/gdm/blob/master/GLDM_S0540826/u6/Scale_S0540826.java
+                         *
+                         * **/
+
+                        int a = pix[pos];
+                        double ra = (a >> 16) & 0xff;
+                        double ga = (a >> 8) & 0xff;
+                        double ba = a & 0xff;
+
+                        int bb = pix[pos + 1];
+                        double rb = (bb >> 16) & 0xff;
+                        double gb = (bb >> 8) & 0xff;
+                        double bbb = bb & 0xff;
+
+                        int c = pix[pos + width];
+                        double rc = (c >> 16) & 0xff;
+                        double gc = (c >> 8) & 0xff;
+                        double bc = c & 0xff;
+
+                        int d = pix[pos + width + 1];
+                        double rd = (d >> 16) & 0xff;
+                        double gdd = (d >> 8) & 0xff;
+                        double bd = d & 0xff;
+
+                        int r = (int)(ra*(1-h)*(1-v) + rb*h*(1-v) + rc*(1-h)*v + rd*h*v);
+                        int g = (int)(ga*(1-h)*(1-v) + gb*h*(1-v) + gc*(1-h)*v + gdd*h*v);
+                        int b = (int)(ba*(1-h)*(1-v) + bbb*h*(1-v) + bc*(1-h)*v + bd*h*v);
+
+                        if (r < 0)
+                            r = 0;
+                        else if (r > 255)
+                            r = 255;
+                        if (g < 0)
+                            g = 0;
+                        else if (g > 255)
+                            g = 255;
+                        if (b < 0)
+                            b = 0;
+                        else if (b > 255)
+                            b = 255;
+
+                        pix_n[pos_n] = (0xFF << 24) | (r << 16) | (g << 8) | b;
+
+
                     }
                 }
             }
@@ -124,7 +183,7 @@ public class Scale_S0573689 implements PlugInFilter {
         neu.updateAndDraw();
     }
 
-    void showAbout() {
+    void showabout() {
         IJ.showMessage("");
     }
 }

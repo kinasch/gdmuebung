@@ -227,7 +227,7 @@ public class GLDM_U1_S0573689 implements PlugIn {
                 int g = 255;
                 int b = 255;
 
-                // Abfrage ob Pixel ein Teil der Kreisgleichung mit dem Radius 120 ist oder ob der Pixel innerhalb dieses Kreis liegt
+                // Abfrage ob Pixel ein Teil der Kreisgleichung mit dem radius 120 ist oder ob der Pixel innerhalb dieses Kreis liegt
                 if(Math.pow(120,2)>=(Math.pow((x-(width/2)),2)+Math.pow((y-(height/2)),2))){
                     r=255;g=0;b=0;
                 }

@@ -117,7 +117,7 @@ public class GRDM_U3_S0573689 implements PlugIn {
 
         private void changePixelValues(ImageProcessor ip) {
 
-            // Array zum Zurückschreiben der Pixelwerte
+            // array zum Zurückschreiben der Pixelwerte
             int[] pixels = (int[])ip.getPixels();
 
             if (method.equals("Original")) {
@@ -278,7 +278,7 @@ public class GRDM_U3_S0573689 implements PlugIn {
                         int gn = 0;
                         int bn = 0;
 
-                        // Anwenden der gewählten Farben nach dem Graustufenwert
+                        // anwenden der gewählten Farben nach dem Graustufenwert
                         int rgb = (r+g+b)/3;
 
                         if(rgb < cp*1){
@@ -373,7 +373,7 @@ public class GRDM_U3_S0573689 implements PlugIn {
                         int gn = rngnbn;
                         int bn = rngnbn;
 
-                        // Anwendung der Sepiatiefe
+                        // anwendung der Sepiatiefe
                         rn = rn + (sepiaTiefe * 2);
                         gn = gn + (sepiaTiefe);
 

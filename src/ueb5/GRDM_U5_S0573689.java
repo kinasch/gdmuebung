@@ -116,7 +116,7 @@ public class GRDM_U5_S0573689 implements PlugIn {
 
         private void changePixelValues(ImageProcessor ip) {
 
-            // Array zum Zurückschreiben der Pixelwerte
+            // array zum Zurückschreiben der Pixelwerte
             int[] pixels = (int[])ip.getPixels();
 
             if (method.equals("Original")) {

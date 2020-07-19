@@ -178,7 +178,7 @@ public class GRDM_U2_S0573689 implements PlugIn {
 		
 		private void changePixelValues(ImageProcessor ip) {
 			
-			// Array fuer den Zugriff auf die Pixelwerte
+			// array fuer den Zugriff auf die Pixelwerte
 			int[] pixels = (int[])ip.getPixels();
 			
 			for (int y=0; y<height; y++) {
@@ -196,11 +196,11 @@ public class GRDM_U2_S0573689 implements PlugIn {
 					int u  = (int)((b-ly)*0.493);
 					int v  = (int)((r-ly)*0.877);
 
-					// Alles wird hier veraendert
+					// alles wird hier veraendert
 					// Brightness
 					ly = (int)(ly+(brightness));
 
-					/* Contrast REDACTED
+					/* Contrast REDaCTED
 					if(!(contrast == 555.5)) {			// Check ob Slider schon angeschoben, sonst wird der Kontrast ignoriert
 						ly = (int) (ly * (contrast)+brightness);
 						// u = (int) (u * (contrast));
