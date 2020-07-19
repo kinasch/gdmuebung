@@ -50,6 +50,15 @@ public class Scale_S0573689 implements PlugInFilter {
         int width  = ip.getWidth();  // Breite bestimmen
         int height = ip.getHeight(); // Hoehe bestimmen
 
+        double ratioHoehe = (double)height_n/(double)height;
+        double ratioBreite = (double)width_n/(double)width;
+        double ratio = 0;
+        if (ratioHoehe > ratioBreite){
+            ratio = ratioHoehe;
+        } else{
+            ratio = ratioBreite;
+        }
+
         //height_n = height;
         //width_n  = width;
 
@@ -77,10 +86,23 @@ public class Scale_S0573689 implements PlugInFilter {
                 }
 
                 if(methode.equals("Pixelwiederholung")) {
-                    if (y < height && x < width) {
+                    if (y < height*ratio && x < width*ratio) {
+                        /*
+                        * int pos_n = y_n * width_n + x_n;
+                        * int pos = y * width + x;
+                        *
+                        * float v = y_n - y;
+                        * float h = x_n - x;
+                        *
+                        * if(h<0.5 && v<0.5) pos = y * width + x;
+                        * if(h>=0.5 && v<0.5) pos = y * width + (x+1);
+                        * if(h<0.5 && v>=0.5) pos = (y+1) * width + x;
+                        * if(h>=0.5 && v>=0.5) pos = (y+1) * width + (x+1);
+                        *
+                        * */
+                        // der folgende Code enstand durch Inspiration: https://github.com/judithekoch/gdm/blob/master/GLDM_S0540826/u6/Scale_S0540826.java#L125
                         int pos_n = y_n * width_n + x_n;
-                        int pos = y * width + x;
-
+                        int pos = (int)(x_n/ratioBreite) + (int)(y_n/ratioHoehe) * width;
                         pix_n[pos_n] = pix[pos];
                     }
                 }
